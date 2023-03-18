@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import styled from "styled-components";
 import { Button } from "../../components/button";
 import { Radio } from "../../components/checkbox";
-import { Dropdown } from "../../components/dropdown";
 import { Field } from "../../components/field";
 import { Input } from "../../components/input";
 import { Label } from "../../components/label";
@@ -12,6 +11,8 @@ import { postStatus } from "../../utils/constants";
 import ImageUpload from "../../components/image/ImageUpload";
 import useFirebaseImage from "../../hooks/useFirebaseImage";
 import Toggle from "../../components/toggle/Toggle";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import {db} from "../../firebase/firebase-config";
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
@@ -36,6 +37,23 @@ const PostAddNew = () => {
       }
       const {image, progress, handleDeleteImage, handleSelectImage} = useFirebaseImage(getValues, setValue);
       
+      useEffect(()=>{
+        async function getData(){
+          const colRef = collection(db, "categories");
+          const q = query(colRef, where("status", "==", 1));
+          const querySnapshot = await getDocs(q);
+          let result = [];
+          querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            result.push({
+              id: doc.id,
+              ...doc.data()
+            })
+          });
+          console.log("result", result);
+        }
+        getData();
+      }, []);
 
   return (
     <PostAddNewStyles>
@@ -64,6 +82,9 @@ const PostAddNew = () => {
           <Field>
               <Label>Image</Label>
               <ImageUpload handleDeleteImage={handleDeleteImage} name='image' onChange={handleSelectImage} progress={progress} image={image}></ImageUpload>
+          </Field>
+          <Field>
+            <Label>Category</Label>
           </Field>
           <Field>
             <Label>Status</Label>
@@ -107,7 +128,6 @@ const PostAddNew = () => {
             <Label>Feature posts</Label>
             <Toggle on={watchHot ===  true} onClick={() => setValue("hot", !watchHot)}></Toggle>
           </Field>
-          <Field></Field>
         </div>
         <Button type="submit" className="mx-auto max-w-xs">
           Add new post
