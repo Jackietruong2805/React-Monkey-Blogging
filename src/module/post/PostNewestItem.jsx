@@ -55,8 +55,8 @@ const PostNewestItem = () => {
           >
     </PostImage>
       <div className="post-content">
-        <PostCategory type="secondary">Kiến thức</PostCategory>
-        <PostTitle>Hướng dẫn setup phòng cực chill dành cho người mới toàn tập</PostTitle>
+        <PostCategory type="secondary">Knowledge</PostCategory>
+        <PostTitle>The complete guide to learn new languages for beginners</PostTitle>
         <PostMeta></PostMeta>
       </div>
     </PostNewestItemStyles>

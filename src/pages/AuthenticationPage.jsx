@@ -14,6 +14,7 @@ const AuthenticationPageStyles = styled.div`
         font-weight: bold;
         font-size: 40px;
         margin-bottom: 40px;
+        font-size: 14px;
     }
     .form{
         max-width: 600px;

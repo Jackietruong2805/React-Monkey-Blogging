@@ -42,7 +42,7 @@ const PostItem = () => {
         >
     </PostImage>
     <PostCategory size='big'>Kiến thức</PostCategory>
-    <PostTitle>Hướng dẫn setup phòng cực chill dành cho người mới toàn tập</PostTitle>
+    <PostTitle>The complete guide to learn new languages for beginners</PostTitle>
     <PostMeta></PostMeta>
     </PostItemStyles>
   );

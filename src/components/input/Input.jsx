@@ -9,6 +9,10 @@ const InputStyles = styled.div`
     width: 100%;
     padding: ${props => props.hasIcon ? "20px 60px 20px 20px" : "20px"};
     background-color: ${(props) => props.theme.grayLight};
+    padding: ${(props) =>
+      props.hasIcon ? "15px 60px 15px 25px" : "15px 25px"};
+    background-color: transparent;
+    border: 1px solid ${(props) => props.theme.grayf1};
     border-radius: 8px;
     font-weight: 500;
     border: 1px solid transparent;
@@ -16,6 +20,8 @@ const InputStyles = styled.div`
     :focus {
       background-color: white;
       border-color: ${(props) => props.theme.primary};
+      color: ${(props) => props.theme.black};
+      font-size: 14px;
     }
     ::-webkit-input-placeholder {
       color: #84878b;

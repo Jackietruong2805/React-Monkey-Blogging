@@ -1,11 +1,12 @@
-import { doc, getDoc } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { db } from "../../firebase/firebase-config";
-import PostCategory from "./PostCategory";
-import PostImage from "./PostImage";
-import PostMeta from "./PostMeta";
+import slugify from "slugify";
+import React, { useEffect, useState } from "react";
 import PostTitle from "./PostTitle";
+import PostMeta from "./PostMeta";
+import PostImage from "./PostImage";
+import PostCategory from "./PostCategory";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase/firebase-config";
 const PostFeatureItemStyles = styled.div`
   width: 100%;
   border-radius: 16px;
@@ -72,14 +73,20 @@ const PostFeatureItem = ({data}) => {
 
   useEffect(()=>{
     async function fetchUser(){
-      const docRef = doc(db, "users", data.userId);
-      const docSnap = await getDoc(docRef);
-      setUser(docSnap.data());
+      if(data.userId){
+        const docRef = doc(db, "users", data.userId);
+        const docSnap = await getDoc(docRef);
+        if(docSnap.data()){
+          setUser(docSnap.data());
+        }
+      }
     }
 
     fetchUser();
   }, [data.userId]);
   if(!data || !data.id) return null;
+  const date = data?.createdAt?.seconds ? new Date(data?.createdAt?.seconds*1000) : new Date();
+  const formatDate = new Date(date).toLocaleDateString('vi-VI');
   return (
     <PostFeatureItemStyles>
     <PostImage 
@@ -89,8 +96,8 @@ const PostFeatureItem = ({data}) => {
       <div className="post-overlay"></div>
       <div className="post-content">
         <div className="post-top">
-          {category?.name && <PostCategory>{category?.name}</PostCategory>}
-          <PostMeta authorName={user?.name}></PostMeta>
+          {category?.name && <PostCategory to={category?.slug}>{category?.name}</PostCategory>}
+          <PostMeta to={slugify(user?.fullname || "", {lower: true})} authorName={user?.fullname} date={formatDate}></PostMeta>
         </div>
         <PostTitle>{data?.title}</PostTitle>
       </div>

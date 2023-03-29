@@ -12,10 +12,12 @@ import { postStatus } from "../../utils/constants";
 import ImageUpload from "../../components/image/ImageUpload";
 import useFirebaseImage from "../../hooks/useFirebaseImage";
 import Toggle from "../../components/toggle/Toggle";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, serverTimestamp, where } from "firebase/firestore";
 import {db} from "../../firebase/firebase-config";
 import { useAuth } from "../../contexts/auth-context";
 import { toast } from "react-toastify";
+import FieldCheckboxes from "../../drafts/FieldCheckboxes";
+import DashboardHeading from "../dashboard/DashboardHeading";
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
@@ -34,32 +36,43 @@ const PostAddNew = () => {
       const watchStatus = +watch("status");
       const watchHot = watch("hot");
       // const watchCategory = watch("category");
-      const {image, progress, handleDeleteImage, handleSelectImage} = useFirebaseImage(getValues, setValue);
+      const {image, handleResetUpload, progress, handleDeleteImage, handleSelectImage} = useFirebaseImage(getValues, setValue);
 
       const [categories, setCategories] = useState([]);
       const [selectCategory, setSelectCategory] = useState("");
-
+      const [loading, setLoading] = useState(false);
       const addPostHandler = async (values)=>{
-        let cloneValues = {...values}
-        cloneValues.slug = slugify(cloneValues.slug || cloneValues.title, {lowercase: true});
-        cloneValues.status = +cloneValues.status
-        console.log('cloneValues', cloneValues);
-        const colRef = collection(db, "posts");
-        await addDoc(colRef, {
-          ...cloneValues,
-          image,
-          userId: userInfo.uid
-        })
-        toast.success("Create new post successfully!");
-        reset({
-          title: "",
-          slug: "",
-          status: 2,
-          categoryId: "",
-          hot: false,
-          image: ""
-        });
-        setSelectCategory({});
+        try{
+          setLoading(true);
+          let cloneValues = {...values}
+          cloneValues.slug = slugify(cloneValues.slug || cloneValues.title, {lowercase: true});
+          cloneValues.status = +cloneValues.status
+          console.log('cloneValues', cloneValues);
+          const colRef = collection(db, "posts");
+          await addDoc(colRef, {
+            ...cloneValues,
+            image,
+            userId: userInfo.uid,
+            createdAt: serverTimestamp()
+          })
+          toast.success("Create new post successfully!");
+          reset({
+            title: "",
+            slug: "",
+            status: 2,
+            categoryId: "",
+            hot: false,
+            image: ""
+          });
+          handleResetUpload();
+          setSelectCategory({});
+        }catch(error){
+          setLoading(false);
+          throw new Error(error);
+        }finally{
+          setLoading(false);
+        }
+        
       }
       
       useEffect(()=>{
@@ -80,6 +93,10 @@ const PostAddNew = () => {
         getData();
       }, []);
 
+      useEffect(()=>{
+        document.title = 'Monkey blogging - Add new posts'
+      }, []);
+
 const handleClickOption = (item) =>{
     setValue("categoryId", item.id);
     setSelectCategory(item);
@@ -88,9 +105,9 @@ const handleClickOption = (item) =>{
 
   return (
     <PostAddNewStyles>
-      <h1 className="dashboard-heading">Add new post</h1>
+      <DashboardHeading title="Add post" desc="Add new post"></DashboardHeading>
       <form onSubmit={handleSubmit(addPostHandler)}>
-        <div className="grid grid-cols-2 gap-x-10 mb-10">
+        <div className="form-layout">
           <Field>
             <Label>Title</Label>
             <Input
@@ -109,14 +126,14 @@ const handleClickOption = (item) =>{
             ></Input>
           </Field>
         </div>
-        <div className="grid grid-cols-2 gap-x-10 mb-10">
+        <div className="form-layout">
           <Field>
               <Label>Image</Label>
               <ImageUpload handleDeleteImage={handleDeleteImage} name='image' onChange={handleSelectImage} progress={progress} image={image}></ImageUpload>
           </Field>
           <Field>
             <Label>Status</Label>
-            <div className="flex items-center gap-x-5">
+            <FieldCheckboxes>
               <Radio
                 name="status"
                 control={control}
@@ -144,7 +161,7 @@ const handleClickOption = (item) =>{
               >
                 Reject
               </Radio>
-            </div>
+            </FieldCheckboxes>
           </Field>
           <Field>
             <Label>Author</Label>
@@ -165,18 +182,19 @@ const handleClickOption = (item) =>{
             </span>}
           </Field>
         </div>
-        <div className="grid grid-cols-2 gap-x-10 mb-10">
+        <div className="form-layout">
           <Field>
             <Label>Feature posts</Label>
             <Toggle on={watchHot ===  true} onClick={() => setValue("hot", !watchHot)}></Toggle>
           </Field>
         </div>
-        <Button type="submit" className="mx-auto max-w-xs">
+        <Button type="submit" className="mx-auto max-w-xs w-[300px]" isLoading={loading} disabled={loading}>
           Add new post
         </Button>
       </form>
     </PostAddNewStyles>
   );
 };
+
 
 export default PostAddNew;

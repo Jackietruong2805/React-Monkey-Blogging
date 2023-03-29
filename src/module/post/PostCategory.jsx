@@ -27,8 +27,9 @@ const PostCategoryStyles = styled.div`
 const PostCategory = ({type = 'primary', className, to='/', children}) => {
     return (
         <PostCategoryStyles type={type} className={`post-category ${className}`}>
-        <NavLink to={to}></NavLink>
-            {children}
+            <NavLink to={to}>
+                {children}
+            </NavLink>
         </PostCategoryStyles>
     );
 };

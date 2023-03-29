@@ -8,11 +8,12 @@ import { Label } from '../components/label';
 import { Button } from '../components/button';
 import { toast } from 'react-toastify';
 import {auth, db} from "../firebase/firebase-config";
-import {createUserWithEmailAndPassword, updateProfile} from 'firebase/auth'
+import {createUserWithEmailAndPassword, updateProfile} from 'firebase/auth';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import AuthenticationPage from './AuthenticationPage';
 import InputTogglePassword from '../components/input/InputTogglePassword';
+import slugify from 'slugify';
 
 const schema = yup.object().shape({
     fullname: yup.string().required("Please enter your Fullname"),
@@ -34,11 +35,19 @@ const SignUpPage = () => {
             displayName: values.fullname
         })
         const colRef = collection(db, 'users');
-        await addDoc(colRef, {
+        // Tạo và lấy auth.currentUser.uid làm id của user 
+        await setDoc(doc(db, "users", auth.currentUser.uid), {
             fullname: values.fullname,
             email: values.email,
-            password: values.password
+            password: values.password,
+            username: slugify(values.fullname, {lower: true})
         })
+
+        // await addDoc(colRef, {
+        //     fullname: values.fullname,
+        //     email: values.email,
+        //     password: values.password
+        // })
 
         toast.success("Create user successfully!!!");
         navigate('/');

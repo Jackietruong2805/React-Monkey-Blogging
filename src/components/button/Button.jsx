@@ -15,10 +15,16 @@ const ButtonStyles = styled.button`
     `};
     ${props => props?.kind === 'primary' && css`
         color: white;
-        background-image: linear-gradient(to right bottom, ${props => props?.theme.primary}, ${props => props?.theme.secondary});
+        background-color: ${(props) => props.theme.primary};
+    `};
+    ${(props) =>
+    props.kind === "ghost" &&
+    css`
+      color: ${(props) => props.theme.primary};
+      background-color: rgba(29, 192, 113, 0.1);
     `};
     font-weight: 600;
-    font-size: 18px;
+    font-size: 16px;
     border-radius: 8px;
     height: ${props => props.height};
     width: 100%;
@@ -37,11 +43,13 @@ const Button = ({type = 'button', onClick = () => {}, height="70px",  kind = 'pr
     const child = isLoading ? <LoadingSpinner></LoadingSpinner> : props.children;
     if(to !== '' && typeof to === 'string'){
         return (
-            <NavLink to={to}>
-                <ButtonStyles type={type} onClick={onClick} height={height} kind={kind} {...props} >
-                    {child}
-                </ButtonStyles>
-            </NavLink>
+            <span>
+                <NavLink to={to}>
+                    <ButtonStyles type={type} onClick={onClick} height={height} kind={kind} {...props} >
+                        {child}
+                    </ButtonStyles>
+                </NavLink>
+            </span>
         )
     }
     return (
