@@ -6,29 +6,56 @@ import { Field, FieldCheckboxes } from "../../components/field";
 import { Input } from "../../components/input";
 import { Label } from "../../components/label";
 import DashboardHeading from "../dashboard/DashboardHeading";
+import { categoryStatus } from "../../utils/constants";
+import slugify from "slugify";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { toast } from "react-toastify";
+import { db } from "../../firebase/firebase-config";
 
 const CategoryAddNew = () => {
   const {
-    control, handleSubmit
+    control, handleSubmit, watch, reset, formState: {isValid, isSubmitting}
   } = useForm({
     mode: "onChange",
     defaultValues:{
-        title: "",
+        name: "",
         slug: "",
         status: 1,
         createdAt: new Date(),
     }
   });
-  const handleAddNewCategory = (values)=>{
-    console.log("values", values);
+  const handleAddNewCategory = async (values)=>{
+    if(!isValid) return;
+    const newValues = {...values};
+    newValues.slug = slugify(newValues.slug || newValues.name, {lower: true});
+    newValues.status = +newValues.status;
+    const colRef = collection(db, "categories");
+    try{
+      await addDoc(colRef, {
+        ...newValues,
+        createdAt: serverTimestamp()
+      })
+      toast.success("Create new category successfully");
+    }catch(error){
+      toast.error(error.message);
+    }finally{
+      reset({
+        name: "",
+        slug: "",
+        status: 1,
+        createdAt: new Date(),
+      });
+    }
   };
+
+  const watchStatus = +watch("status");
   return (
     <div>
       <DashboardHeading
         title="New category"
         desc="Add new category"
       ></DashboardHeading>
-      <form onSubmit={handleSubmit(handleAddNewCategory)}>
+      <form onSubmit={handleSubmit(handleAddNewCategory)} autoComplete="off">
         <div className="form-layout">
           <Field>
             <Label>Name</Label>
@@ -51,16 +78,16 @@ const CategoryAddNew = () => {
           <Field>
             <Label>Status</Label>
             <FieldCheckboxes>
-              <Radio name="status" control={control} checked={true}>
+              <Radio name="status" control={control} checked={watchStatus === categoryStatus.APPROVED} value={categoryStatus.APPROVED}>
                 Approved
               </Radio>
-              <Radio name="status" control={control}>
+              <Radio name="status" control={control} checked={watchStatus === categoryStatus.UNAPPROVED} value={categoryStatus.UNAPPROVED}>
                 Unapproved
               </Radio>
             </FieldCheckboxes>
           </Field>
         </div>
-        <Button kind="primary" className="mx-auto" type='submit'>
+        <Button kind="primary" className="mx-auto w-[200px]" type='submit' disabled={isSubmitting} isLoading={isSubmitting}>
           Add new category
         </Button>
       </form>

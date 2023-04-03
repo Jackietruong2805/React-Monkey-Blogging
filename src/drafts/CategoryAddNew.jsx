@@ -10,18 +10,25 @@ import { useForm } from "react-hook-form";
 const CategoryAddNew = () => {
   const {
     control,
+    handleSubmit,
+    watch,
     setValue,
-    formState: { errors, isSubmitting, isValid },
   } = useForm({
     mode: "onChange",
   });
+
+  const handleAddNewCategory = (values)=>{
+    const newValues = {...values};
+    newValues.slug = slugify(newValues.slug || newValues.title, {lower: true});
+  }
+  const watchStatus = +watch("status");
   return (
     <div>
       <DashboardHeading
         title="New category"
         desc="Add new category"
       ></DashboardHeading>
-      <form>
+      <form onSubmit={handleSubmit(handleAddNewCategory)}>
         <div className="form-layout">
           <Field>
             <Label>Name</Label>
@@ -29,6 +36,7 @@ const CategoryAddNew = () => {
               control={control}
               name="name"
               placeholder="Enter your category name"
+              required
             ></Input>
           </Field>
           <Field>
@@ -44,10 +52,10 @@ const CategoryAddNew = () => {
           <Field>
             <Label>Status</Label>
             <div className="flex flex-wrap gap-x-5">
-              <Radio name="status" control={control} checked={true}>
+              <Radio name="status" control={control} checked={watchStatus === 1} onClick={() => setValue("")}>
                 Approved
               </Radio>
-              <Radio name="status" control={control}>
+              <Radio name="status" control={control} checked={watchStatus === 2}>
                 Unapproved
               </Radio>
             </div>

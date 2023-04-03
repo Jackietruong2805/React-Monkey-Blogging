@@ -21,6 +21,7 @@
     "sass": "^1.58.3",
     "slugify": "^1.6.5",
     "styled-components": "^5.3.6",
+    "sweetalert2": "^11.7.3",
     "yup": "^1.0.2"
   },
   "devDependencies": {

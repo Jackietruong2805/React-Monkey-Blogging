@@ -14,6 +14,7 @@ import PageNotFound from "./pages/PageNotFound"
 import PostDetailsPage from "./pages/PostDetailsPage"
 import SignInPage from "./pages/SignInPage"
 import SignUpPage from "./pages/SignUpPage"
+import CategoryUpdate from "./module/category/CategoryUpdate"
 
 function App() {
 
@@ -49,6 +50,10 @@ function App() {
               <Route
               path="/manage/add-category"
               element={<CategoryAddNew></CategoryAddNew>}
+            ></Route>
+            <Route
+              path="/manage/update-category"
+              element={<CategoryUpdate></CategoryUpdate>}
             ></Route>
             <Route
               path="/manage/user"

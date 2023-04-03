@@ -27,7 +27,6 @@ const ButtonStyles = styled.button`
     font-size: 16px;
     border-radius: 8px;
     height: ${props => props.height};
-    width: 100%;
     :disabled{
         pointer-events: none;
         opacity: 0.5;
