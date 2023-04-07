@@ -3,8 +3,9 @@ import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../../contexts/auth-context';
 import PageNotFound from '../../pages/PageNotFound';
-import DashboardHeader from './DashBoardHeader';
 import Sidebar from './Sidebar';
+import DashboardHeader from './DashBoardHeader';
+
 const DashboardStyles = styled.div`
   max-width: 1600px;
   margin: 0 auto;
