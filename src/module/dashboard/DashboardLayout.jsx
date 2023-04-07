@@ -1,5 +1,5 @@
 import React from 'react';
-import DashboardHeader from './DashBoardHeader';
+import DashboardHeader from './DashBoardHeader.jsx';
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../../contexts/auth-context';
