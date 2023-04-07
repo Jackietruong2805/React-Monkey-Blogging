@@ -1,7 +1,2 @@
-import Field from "./Field";
-import FieldCheckboxes from "./FieldCheckboxes";
-
-export{
-    Field,
-    FieldCheckboxes
-}
+export {default as Field} from "./Field";
+export {default as FieldCheckboxes} from "./FieldCheckboxes";

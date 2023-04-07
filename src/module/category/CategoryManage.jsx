@@ -1,32 +1,82 @@
+import Table from "../../components/table/Table";
+import Swal from 'sweetalert2';
 import React, { useEffect, useState } from "react";
 import DashboardHeading from "../dashboard/DashboardHeading";
-import Table from "../../components/table/Table";
-import { Button } from "../../components/button";
-import { LabelStatus } from "../../components/label";
 import {ActionView, ActionEdit, ActionDelete} from "../../components/action";
-import { db } from "../../firebase/firebase-config";
-import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
-import { categoryStatus } from "../../utils/constants";
-import Swal from 'sweetalert2'
 import { useNavigate } from "react-router-dom";
+import { LabelStatus } from "../../components/label";
+import { debounce } from "debounce";
+import { db } from "../../firebase/firebase-config";
+import { collection, deleteDoc, doc, getDocs, limit, onSnapshot, query, startAfter, where } from "firebase/firestore";
+import { categoryStatus } from "../../utils/constants";
+import { Button } from "../../components/button";
+
+const CATEGORY_PER_PAGE = 10;
 
 const CategoryManage = () => {
-  const navigate  = useNavigate();
   const [categoryList, setCategoryList] = useState([]);
-  useEffect(()=>{
-    const colRef = collection(db, "categories");
-    onSnapshot(colRef, snapshot =>{
+  const navigate  = useNavigate();
+  const [filter, setFilter] = useState("");
+  const [lastDoc, setLastDoc] = useState();
+  const [total, setTotal] = useState(0);
+  const handleLoadMoreCategory = async ()=>{
+    const nextRef = query(
+        collection(db, "categories"),
+        startAfter(lastDoc),
+        limit(CATEGORY_PER_PAGE));
+    
+    onSnapshot(nextRef, snapshot =>{
       let results = [];
       snapshot.forEach(doc => {
         results.push({
           id: doc.id,
           ...doc.data()
         });
-        setCategoryList(results);
+        setCategoryList([...categoryList, ...results]);
       })
       console.log("categoryList", categoryList);
     })
-  },[])
+
+    const documentSnapshots = await getDocs(nextRef);
+
+      // Get the last visible document
+      const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+
+    setLastDoc(lastVisible);
+  };
+  useEffect(()=>{
+    async function fetchData(){
+      const colRef = collection(db, "categories");
+      console.log("filter", filter);
+      const newRef = filter 
+        ? query(colRef, where("name", ">=", filter), where("name", "<=", filter + "utf8")) 
+        : query(colRef, limit(CATEGORY_PER_PAGE));
+
+      const documentSnapshots = await getDocs(newRef);
+
+      // Get the last visible document
+      const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+
+      onSnapshot(colRef, snapshot =>{
+        setTotal(snapshot.size);
+      });
+
+      onSnapshot(newRef, snapshot =>{
+        let results = [];
+        snapshot.forEach(doc => {
+          results.push({
+            id: doc.id,
+            ...doc.data()
+          });
+          setCategoryList(results);
+        })
+        console.log("categoryList", categoryList);
+      })
+      setLastDoc(lastVisible);
+    }
+
+    fetchData();
+  },[filter])
 
   const handleDeleteCategory = async (docId)=>{
     const colRef = doc(db, "categories", docId);
@@ -50,6 +100,9 @@ const CategoryManage = () => {
     })
     // console.log("docData", docData.data());
   }
+  const handleInputFilter = debounce((e)=>{
+    setFilter(e.target.value);
+  }, 500);
   return (
     <div>
       <DashboardHeading
@@ -60,6 +113,9 @@ const CategoryManage = () => {
           Create category
         </Button>
       </DashboardHeading>
+      <div className="mb-10 flex justify-end">
+        <input type="text" placeholder="Search category..." onChange={handleInputFilter} className="py-4 px-5 border border-gray-300 rounded-lg"/>
+      </div>
       <Table>
         <thead>
           <tr>
@@ -97,6 +153,11 @@ const CategoryManage = () => {
         ))}
         </tbody>
       </Table>
+      {total > categoryList.length &&(
+        <div className="mt-10">
+          <Button className="mx-auto" onClick={handleLoadMoreCategory}>Load more</Button>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,2 @@
-import Checkbox from "./Checkbox";
-import Radio from "./Radio";
-
-export { Radio, Checkbox };
+export {default as Radio} from "./Radio";
+export {default as Checkbox} from "./Checkbox";

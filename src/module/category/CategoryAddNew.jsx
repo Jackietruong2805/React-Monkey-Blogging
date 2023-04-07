@@ -1,16 +1,16 @@
-import React from "react";
-import { useForm } from "react-hook-form";
-import { Button } from "../../components/button";
-import { Radio } from "../../components/checkbox";
-import { Field, FieldCheckboxes } from "../../components/field";
-import { Input } from "../../components/input";
-import { Label } from "../../components/label";
-import DashboardHeading from "../dashboard/DashboardHeading";
-import { categoryStatus } from "../../utils/constants";
 import slugify from "slugify";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import React from "react";
+import DashboardHeading from "../dashboard/DashboardHeading";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { Radio } from "../../components/checkbox";
+import { Label } from "../../components/label";
+import { Input } from "../../components/input";
+import { Field, FieldCheckboxes } from "../../components/field";
 import { db } from "../../firebase/firebase-config";
+import { categoryStatus } from "../../utils/constants";
+import { Button } from "../../components/button";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const CategoryAddNew = () => {
   const {
