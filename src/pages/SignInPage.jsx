@@ -59,7 +59,7 @@ const SignInPage = () => {
                 <div className='have-account'>
                     You have not an account? <NavLink to={'/sign-up'}>Register an account</NavLink>
                 </div>
-                <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting}>Sign In</Button>
+                <Button type="submit" className='mx-auto' disabled={isSubmitting} isLoading={isSubmitting}>Sign In</Button>
             </form>
         </AuthenticationPage>
     );

@@ -15,7 +15,6 @@ const InputStyles = styled.div`
     border: 1px solid ${(props) => props.theme.grayf1};
     border-radius: 8px;
     font-weight: 500;
-    border: 1px solid transparent;
     transition: all 0.2s linear;
     :focus {
       background-color: white;

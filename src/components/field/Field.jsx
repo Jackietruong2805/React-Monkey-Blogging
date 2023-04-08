@@ -6,6 +6,7 @@ const FieldStyles = styled.div`
   flex-direction: column;
   align-items: flex-start;
   row-gap: 10px;
+  margin-bottom: 10px;
   @media screen and (max-width: 1023.98px) {
     margin-bottom: 20px;
   }
