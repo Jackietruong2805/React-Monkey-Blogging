@@ -3,7 +3,7 @@ import ImageUpload from "../../components/image/ImageUpload";
 import DashboardHeading from "../dashboard/DashboardHeading";
 import { useForm } from "react-hook-form";
 import { Label } from "../../components/label";
-import { Input } from "postcss";
+import { Input } from "../../components/input";
 import { Field } from "../../components/field";
 import { Button } from "../../components/button";
 

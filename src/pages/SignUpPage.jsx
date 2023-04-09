@@ -10,10 +10,11 @@ import { toast } from 'react-toastify';
 import {auth, db} from "../firebase/firebase-config";
 import {createUserWithEmailAndPassword, updateProfile} from 'firebase/auth';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import AuthenticationPage from './AuthenticationPage';
 import InputTogglePassword from '../components/input/InputTogglePassword';
 import slugify from 'slugify';
+import { userRole, userStatus } from '../utils/constants';
 
 const schema = yup.object().shape({
     fullname: yup.string().required("Please enter your Fullname"),
@@ -32,7 +33,8 @@ const SignUpPage = () => {
         if(!isValid) return;
         await createUserWithEmailAndPassword(auth, values.email, values.password);
         await updateProfile(auth.currentUser, {
-            displayName: values.fullname
+            displayName: values.fullname,
+            photoURL: "https://images.unsplash.com/photo-1606041008023-472dfb5e530f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=388&q=80"
         })
         const colRef = collection(db, 'users');
         // Tạo và lấy auth.currentUser.uid làm id của user 
@@ -40,7 +42,11 @@ const SignUpPage = () => {
             fullname: values.fullname,
             email: values.email,
             password: values.password,
-            username: slugify(values.fullname, {lower: true})
+            username: slugify(values.fullname, {lower: true}),
+            avatar: "https://images.unsplash.com/photo-1606041008023-472dfb5e530f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=388&q=80",
+            status: userStatus.ACTIVE,
+            role: userRole.USER,
+            createdAt: serverTimestamp()
         })
 
         // await addDoc(colRef, {

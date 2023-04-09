@@ -6,6 +6,8 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { useEffect } from "react";
 import { ActionDelete, ActionEdit } from "../../components/action";
 import { useNavigate } from "react-router-dom";
+import { userRole, userStatus } from "../../utils/constants";
+import { LabelStatus } from "../../components/label";
 
 const UserTable = () => {
   const [userList, setUserList] = useState([]);
@@ -23,24 +25,55 @@ const UserTable = () => {
       setUserList(results);
     });
   }, []);
+
+  const renderRoleLabel = (role) =>{
+    switch(role){
+      case userRole.ADMIN:
+        return 'Admin';
+      case userRole.MOD:
+        return 'Moderator';
+      case userRole.USER:
+        return 'User';
+      default:
+        break;
+    }
+  }
+
+  const renderLabelStatus = (status) =>{
+    switch(status){
+      case userStatus.ACTIVE:
+        return <LabelStatus type='success'>Active</LabelStatus>;
+      case userStatus.PENDING:
+        return <LabelStatus type='warning'>Pending</LabelStatus>;
+      case userStatus.BAN:
+        return <LabelStatus type='danger'>Rejected</LabelStatus>;
+      default:
+        break;
+    }
+  }
+
   const renderUserItem = (user) => (
     <tr key={user.id}>
       <td title={user.id}>{user.id.slice(0, 5) + "..."}</td>
       <td className="whitespace-nowrap">
         <div className="flex items-center gap-x-3">
           <img
-            src="https://images.unsplash.com/photo-1581803118522-7b72a50f7e9f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"
+            src={user?.avatar}
             alt=""
             className="w-10 h-10 object-cover rounded-md flex-shrink-0"
           />
           <div className="flex-1">
             <h3>{user?.fullname}</h3>
-            <time className="text-sm text-gray-500">{new Date().toLocaleDateString()}</time>
+            <time className="text-sm text-gray-500">{new Date(user?.createdAt?.seconds*1000).toLocaleDateString('vi-VI')}</time>
           </div>
         </div>
       </td>
       <td>{user?.username}</td>
       <td title={user.email}>{user?.email.slice(0,10) + "..."}</td>
+      <td>
+        {renderLabelStatus(Number(user?.status))}
+      </td>
+      <td>{renderRoleLabel(Number(user?.role))}</td>
       <td>
         <div className="flex items-center gap-x-3">
           <ActionEdit
@@ -51,8 +84,6 @@ const UserTable = () => {
           ></ActionDelete>
         </div>
       </td>
-      <td></td>
-      <td></td>
     </tr>
   );
 
