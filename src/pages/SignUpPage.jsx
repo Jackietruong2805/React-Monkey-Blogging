@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Field } from '../components/field';
-import { Input } from '../components/input';
-import { Label } from '../components/label';
-import { Button } from '../components/button';
-import { toast } from 'react-toastify';
-import {auth, db} from "../firebase/firebase-config";
-import {createUserWithEmailAndPassword, updateProfile} from 'firebase/auth';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import AuthenticationPage from './AuthenticationPage';
-import InputTogglePassword from '../components/input/InputTogglePassword';
 import slugify from 'slugify';
+import React, { useEffect, useState } from 'react';
+import InputTogglePassword from '../components/input/InputTogglePassword';
+import AuthenticationPage from './AuthenticationPage';
+import * as yup from "yup";
+import {createUserWithEmailAndPassword, updateProfile} from 'firebase/auth';
+import {auth, db} from "../firebase/firebase-config";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { userRole, userStatus } from '../utils/constants';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Label } from '../components/label';
+import { Input } from '../components/input';
+import { Field } from '../components/field';
+import { Button } from '../components/button';
+import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 const schema = yup.object().shape({
     fullname: yup.string().required("Please enter your Fullname"),

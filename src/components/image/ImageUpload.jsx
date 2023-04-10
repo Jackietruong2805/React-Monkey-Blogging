@@ -1,5 +1,8 @@
 import React, { Fragment } from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
+
+
 
 const ImageUploadStyles = styled.label`
   .bg-hover:hover + .trash-button{
@@ -68,6 +71,13 @@ const ImageUpload = (props) => {
       )}
     </ImageUploadStyles>
   );
+};
+
+ImageUpload.propTypes = {
+  name: PropTypes.string,
+  className: PropTypes.string,
+  progress: PropTypes.number,
+  image: PropTypes.string,
 };
 
 export default ImageUpload;

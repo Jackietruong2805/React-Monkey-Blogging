@@ -4,21 +4,28 @@ import DashboardHeading from "../dashboard/DashboardHeading";
 import { useForm } from "react-hook-form";
 import { Radio } from "../../components/checkbox";
 import { Label } from "../../components/label";
-import { Input } from "postcss";
 import { Field } from "../../components/field";
 import { Button } from "../../components/button";
+import { Input } from "../../components/input";
+import ImageUpload from "../../components/image/ImageUpload";
 
 const UserAddNew = () => {
-  const { control } = useForm({
+  const { control, handleSubmit, setValue } = useForm({
     mode: "onChange",
   });
+  const handleCreateUser = (values) =>{
+    console.log("values", values);
+  }
   return (
     <div>
       <DashboardHeading
         title="New user"
         desc="Add new user to system"
       ></DashboardHeading>
-      <form>
+      <form onSubmit={handleSubmit(handleCreateUser)}>
+        <div className='w-[200px] h-[200px] rounded-full mx-auto mb-10'>
+          <ImageUpload className='!rounded-full'></ImageUpload>
+        </div>
         <div className="form-layout">
           <Field>
             <Label>Fullname</Label>
@@ -90,7 +97,7 @@ const UserAddNew = () => {
             </FieldCheckboxes>
           </Field>
         </div>
-        <Button kind="primary" className="mx-auto w-[200px]">
+        <Button type='submit' kind="primary" className="mx-auto w-[200px]">
           Add new user
         </Button>
       </form>

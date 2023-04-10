@@ -10,7 +10,7 @@ const ButtonStyles = styled.button`
     padding: 0 25px;
     line-height: 1;
     ${props => props.kind === 'secondary' && css`
-        color: ${props => props.theme.primary};
+        color: ${props => props.theme.secondary};
         background-color: white;
     `};
     ${props => props?.kind === 'primary' && css`
