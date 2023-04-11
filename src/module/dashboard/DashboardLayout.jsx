@@ -1,10 +1,10 @@
-import React from 'react';
-import DashboardHeader from './DashBoardHeader.jsx';
-import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAuth } from '../../contexts/auth-context';
-import PageNotFound from '../../pages/PageNotFound';
 import Sidebar from './Sidebar';
+import React from 'react';
+import PageNotFound from '../../pages/PageNotFound';
+import DashboardHeader from './DashBoardHeader.jsx';
+import { useAuth } from '../../contexts/auth-context';
+import { Outlet } from 'react-router-dom';
 
 const DashboardStyles = styled.div`
   max-width: 1600px;

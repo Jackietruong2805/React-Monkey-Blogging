@@ -137,8 +137,8 @@ const handleClickOption = (item) =>{
               <Radio
                 name="status"
                 control={control}
-                checked={watchStatus === postStatus.APPROVED}
                 onClick={() => setValue("status", "approved")}
+                checked={watchStatus === postStatus.APPROVED}
                 value={postStatus.APPROVED}
               >
                 Approved
