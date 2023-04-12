@@ -40,7 +40,7 @@ const CategoryManage = () => {
     const documentSnapshots = await getDocs(nextRef);
 
       // Get the last visible document
-      const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+    const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
 
     setLastDoc(lastVisible);
   };

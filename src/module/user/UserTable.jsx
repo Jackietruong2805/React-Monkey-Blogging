@@ -1,13 +1,15 @@
+import Table from "../../components/table/Table";
+import Swal from "sweetalert2";
 import React from "react";
 import { useState } from "react";
-import Table from "../../components/table/Table";
-import { db } from "../../firebase/firebase-config";
-import { collection, onSnapshot } from "firebase/firestore";
-import { useEffect } from "react";
-import { ActionDelete, ActionEdit } from "../../components/action";
-import { useNavigate } from "react-router-dom";
 import { userRole, userStatus } from "../../utils/constants";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { LabelStatus } from "../../components/label";
+import { deleteUser } from "firebase/auth";
+import { db } from "../../firebase/firebase-config";
+import { collection, deleteDoc, doc, onSnapshot, query, where } from "firebase/firestore";
+import { ActionDelete, ActionEdit } from "../../components/action";
 
 const UserTable = () => {
   const [userList, setUserList] = useState([]);
@@ -52,6 +54,30 @@ const UserTable = () => {
     }
   }
 
+  const handleDeleteUser = async (user)=>{
+    const colRef = doc(db, "users", user.id)
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await deleteDoc(colRef);
+        await deleteUser(user);
+        toast.success("Delete user successfully")
+        Swal.fire(
+          'Deleted!',
+          'Your file has been deleted.',
+          'success'
+        )
+      }
+    })
+  };
+
   const renderUserItem = (user) => (
     <tr key={user.id}>
       <td title={user.id}>{user.id.slice(0, 5) + "..."}</td>
@@ -80,7 +106,7 @@ const UserTable = () => {
             onClick={() => navigate(`/manage/update-user/?id=${user.id}`)}
           ></ActionEdit>
           <ActionDelete
-          // onClick={() => handleDeleteCategory(category.id)}
+            onClick={() => handleDeleteUser(user)}
           ></ActionDelete>
         </div>
       </td>

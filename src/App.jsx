@@ -15,6 +15,7 @@ import CategoryManage from "./module/category/CategoryManage"
 import CategoryAddNew from "./module/category/CategoryAddNew"
 import { Route, Routes } from "react-router-dom"
 import { AuthProvider } from "./contexts/auth-context"
+import UserUpdate from "./module/user/UserUpdate"
 
 function App() {
 
@@ -62,6 +63,10 @@ function App() {
             <Route
               path="/manage/add-user"
               element={<UserAddNew></UserAddNew>}
+            ></Route>
+            <Route
+              path="/manage/update-user"
+              element={<UserUpdate></UserUpdate>}
             ></Route>
             <Route
               path="/profile"
