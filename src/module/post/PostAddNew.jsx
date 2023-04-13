@@ -17,12 +17,11 @@ import { Label } from "../../components/label";
 import { Input } from "../../components/input";
 import { Field } from "../../components/field";
 import { Button } from "../../components/button";
-import { addDoc, collection, getDoc, getDocs, query, serverTimestamp, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, where } from "firebase/firestore";
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
     const {userInfo} = useAuth();
-    console.log("userInfo",userInfo);
     const { control, watch, setValue, handleSubmit, getValues, reset } = useForm({
         mode: "onChange",
         defaultValues: {
@@ -30,7 +29,10 @@ const PostAddNew = () => {
           slug: "",
           status: 2,
           categoryId: "",
-          hot: false
+          hot: false,
+          image: "",
+          category: {},
+          user: {}
         },
       });
       const watchStatus = +watch("status");
@@ -41,11 +43,20 @@ const PostAddNew = () => {
       const [categories, setCategories] = useState([]);
       const [selectCategory, setSelectCategory] = useState("");
       const [loading, setLoading] = useState(false);
-      const [userDetails, setUserDetails] = useState({});
-      const [categoryDetails, setCategoryDetails] = useState({});
       useEffect(()=>{
-
-      }, []);
+        async function fetchUserData(){
+          if(!userInfo.uid) return;
+          const q = query(collection(db, "users"), where("email", "==", userInfo.email));
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach(doc => {
+            setValue("user", {
+              id: doc.id,
+              ...doc.data()
+            })
+          })
+        }
+        fetchUserData()
+      }, [userInfo.email]);
       const addPostHandler = async (values)=>{
         try{
           setLoading(true);
@@ -57,7 +68,6 @@ const PostAddNew = () => {
           await addDoc(colRef, {
             ...cloneValues,
             image,
-            userId: userInfo.uid,
             createdAt: serverTimestamp()
           })
           toast.success("Create new post successfully!");
@@ -65,9 +75,10 @@ const PostAddNew = () => {
             title: "",
             slug: "",
             status: 2,
-            categoryId: "",
+            category: {},
             hot: false,
-            image: ""
+            image: "",
+            user: {}
           });
           handleResetUpload();
           setSelectCategory({});
@@ -105,7 +116,10 @@ const PostAddNew = () => {
 const handleClickOption = async (item) =>{
     const colRef = doc(db, "categories", item.id);
     const docData = await getDoc(colRef);
-    setValue("categoryId", item.id);
+    setValue("category",{
+      id: docData.id,
+      ...docData.data()
+    });
     setSelectCategory(item);
 
 }
@@ -202,6 +216,5 @@ const handleClickOption = async (item) =>{
     </PostAddNewStyles>
   );
 };
-
 
 export default PostAddNew;

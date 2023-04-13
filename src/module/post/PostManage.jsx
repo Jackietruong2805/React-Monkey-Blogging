@@ -4,8 +4,10 @@ import { Table } from "../../components/table";
 import { Button } from "../../components/button";
 import { Dropdown } from "../../components/dropdown";
 import DashboardHeading from "../dashboard/DashboardHeading";
+import { useState } from "react";
 
 const PostManage = () => {
+  const [postList, setPostList] = useState([]);
   return (
     <div>
       <DashboardHeading
