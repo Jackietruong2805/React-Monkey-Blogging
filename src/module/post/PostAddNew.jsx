@@ -17,7 +17,7 @@ import { Label } from "../../components/label";
 import { Input } from "../../components/input";
 import { Field } from "../../components/field";
 import { Button } from "../../components/button";
-import { addDoc, collection, getDocs, query, serverTimestamp, where } from "firebase/firestore";
+import { addDoc, collection, getDoc, getDocs, query, serverTimestamp, where } from "firebase/firestore";
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
@@ -41,6 +41,11 @@ const PostAddNew = () => {
       const [categories, setCategories] = useState([]);
       const [selectCategory, setSelectCategory] = useState("");
       const [loading, setLoading] = useState(false);
+      const [userDetails, setUserDetails] = useState({});
+      const [categoryDetails, setCategoryDetails] = useState({});
+      useEffect(()=>{
+
+      }, []);
       const addPostHandler = async (values)=>{
         try{
           setLoading(true);
@@ -97,7 +102,9 @@ const PostAddNew = () => {
         document.title = 'Monkey blogging - Add new posts'
       }, []);
 
-const handleClickOption = (item) =>{
+const handleClickOption = async (item) =>{
+    const colRef = doc(db, "categories", item.id);
+    const docData = await getDoc(colRef);
     setValue("categoryId", item.id);
     setSelectCategory(item);
 
