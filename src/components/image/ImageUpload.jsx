@@ -2,8 +2,6 @@ import React, { Fragment } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-
-
 const ImageUploadStyles = styled.label`
   .bg-hover:hover + .trash-button{
       opacity: 1;

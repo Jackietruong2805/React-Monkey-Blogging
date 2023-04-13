@@ -1,3 +1,4 @@
+import useFirebaseImage from '../../hooks/useFirebaseImage';
 import React from 'react';
 import ImageUpload from '../../components/image/ImageUpload';
 import DashboardHeading from '../dashboard/DashboardHeading';
@@ -13,22 +14,33 @@ import { Field, FieldCheckboxes } from '../../components/field';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase-config';
 import { Button } from '../../components/button';
-import useFirebaseImage from '../../hooks/useFirebaseImage';
 
 const UserUpdate = () => {
-    const {control, handleSubmit, watch, getValues, setValue, reset, formState: {isvalid, isSubmitting}} = useForm({
+    const {control, handleSubmit, watch, getValues, setValue, reset, formState: {isValid, isSubmitting}} = useForm({
         mode: 'onChange'
     });
-
     const [params] = useSearchParams();
     const userId = params.get('id');
+    const watchStatus = +watch('status');
+    const watchRole = +watch('role');
+    const imageUrl = getValues("avatar");
+    const imageRegex = /%2F(\S+)\?/gm.exec(imageUrl);
+    const image_name = imageRegex?.length > 0 ? imageRegex[1] : "";
+    const {
+      image,
+      setImage,
+      progress,
+      handleDeleteImage,
+      handleSelectImage,
+    } = useFirebaseImage(getValues, setValue, image_name, deleteAvatar);
     const handleUpdateUser = async (values)=>{
         console.log("values", values);
-        if(!isvalid) return;
+        if(!isValid) return;
         try{
             const colRef = doc(db, 'users', userId);
             await updateDoc(colRef, {
-                ...values
+                ...values,
+                avatar: image
             })
             toast.success("Update user information successfully!");
         }catch(error){
@@ -36,9 +48,18 @@ const UserUpdate = () => {
             toast.error("Update user failed!")
         }
     }
-    const watchStatus = +watch('status');
-    const watchRole = +watch('role');
-    const imageUrl = getValues("avatar");
+   
+   async function deleteAvatar(){
+      const colRef = doc(db, "users", userId);
+      await updateDoc(colRef, {
+        avatar: ""
+      })
+    }
+
+    useEffect(()=>{
+      setImage(imageUrl);
+    },[imageUrl, setImage])
+
     useEffect(()=>{
         async function fetchData(){
             if(!userId) return;
@@ -50,13 +71,7 @@ const UserUpdate = () => {
         fetchData()
     }, [userId, reset]);
 
-    const {
-        image,
-        handleResetUpload,
-        progress,
-        handleDeleteImage,
-        handleSelectImage,
-      } = useFirebaseImage(getValues, setValue);
+    
     if(!userId) return null;    
     return (
         <div>
@@ -72,7 +87,7 @@ const UserUpdate = () => {
             name="image"
             onChange={handleSelectImage}
             progress={progress}
-            image={imageUrl}
+            image={image}
           ></ImageUpload>
         </div>
         <div className="form-layout">
