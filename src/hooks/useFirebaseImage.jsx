@@ -70,7 +70,6 @@ export default function useFirebaseImage(getValues, setValue, imageName = null, 
         image,
         setImage,
         handleResetUpload,
-        setImage,
         handleSelectImage,
         handleDeleteImage
       }
