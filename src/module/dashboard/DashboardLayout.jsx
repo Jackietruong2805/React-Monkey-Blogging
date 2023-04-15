@@ -1,8 +1,8 @@
+import DashboardHeader from "./DashboardHeader";            
 import styled from 'styled-components';
 import Sidebar from './Sidebar';
 import React from 'react';
 import PageNotFound from '../../pages/PageNotFound';
-import DashboardHeader from './DashBoardHeader.jsx';
 import { useAuth } from '../../contexts/auth-context';
 import { Outlet } from 'react-router-dom';
 
