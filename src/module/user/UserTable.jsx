@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { LabelStatus } from "../../components/label";
 import { deleteUser } from "firebase/auth";
 import { db } from "../../firebase/firebase-config";
-import { collection, deleteDoc, doc, onSnapshot, query, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { ActionDelete, ActionEdit } from "../../components/action";
 
 const UserTable = () => {

@@ -1,17 +1,18 @@
+import Swal from "sweetalert2";
 import React from "react";
 import DashboardHeading from "../dashboard/DashboardHeading";
 import { useState } from "react";
-import { Table } from "../../components/table";
-import { Dropdown } from "../../components/dropdown";
-import { Button } from "../../components/button";
-import { useEffect } from "react";
-import { collection, doc, getDocs, limit, onSnapshot, query, where } from "firebase/firestore";
-import { db } from "../../firebase/firebase-config";
 import { useNavigate } from "react-router-dom";
-import { ActionDelete, ActionEdit, ActionView } from "../../components/action";
-import Swal from "sweetalert2";
-import { LabelStatus } from "../../components/label";
+import { useEffect } from "react";
+import { Table } from "../../components/table";
 import { postStatus } from "../../utils/constants";
+import { LabelStatus } from "../../components/label";
+import { Dropdown } from "../../components/dropdown";
+import { debounce } from "debounce";
+import { db } from "../../firebase/firebase-config";
+import { collection, doc, getDocs, limit, onSnapshot, query, startAfter, where } from "firebase/firestore";
+import { Button } from "../../components/button";
+import { ActionDelete, ActionEdit, ActionView } from "../../components/action";
 
 
 const POST_PER_PAGE = 1;
@@ -20,12 +21,13 @@ const PostManage = () => {
   const [postList, setPostList] = useState([]);
   const [filter, setFilter] = useState("");
   const [lastdoc, setLastDoc] = useState();
+  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
   useEffect(()=>{
     async function fetchData(){
       const colRef = collection(db, "posts");
       const newRef = filter 
-        ? query(colRef, where("name", ">=", filter), where("name", "<=", filter + "utf8")) 
+        ? query(colRef, where("title", ">=", filter), where("title", "<=", filter + "utf8")) 
         : query(colRef, limit(POST_PER_PAGE));
 
       console.log("newRef", newRef);
@@ -33,6 +35,10 @@ const PostManage = () => {
 
       // Get the last visible document
       const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+
+      onSnapshot(colRef, snapshot => {
+        setTotal(snapshot.size);
+      })
 
       onSnapshot(newRef, snapshot =>{
         let results = [];
@@ -85,6 +91,35 @@ const PostManage = () => {
     }
   }
 
+  const handleSearchPost = debounce((e)=>{
+    setFilter(e.target.value);
+  }, 250);
+
+  const handleLoadMorePost = async ()=>{
+    const nextRef = query(
+        collection(db, "posts"),
+        startAfter(lastdoc || 0),
+        limit(POST_PER_PAGE));
+    
+    onSnapshot(nextRef, snapshot =>{
+      let results = [];
+      snapshot.forEach(doc => {
+        results.push({
+          id: doc.id,
+          ...doc.data()
+        });
+        setPostList([...postList, ...results]);
+      })
+    })
+
+    const documentSnapshots = await getDocs(nextRef);
+
+      // Get the last visible document
+    const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
+
+    setLastDoc(lastVisible);
+  };
+
   return (
     <div>
       <DashboardHeading
@@ -102,6 +137,7 @@ const PostManage = () => {
             type="text"
             className="w-full p-4 rounded-lg border border-solid border-gray-300"
             placeholder="Search post..."
+            onChange={handleSearchPost}
           />
         </div>
       </div>
@@ -150,7 +186,7 @@ const PostManage = () => {
             <td>
               <div className="flex items-center gap-x-3 text-gray-500">
                   <ActionView onClick={() => navigate(`/${post.slug}`)}></ActionView>
-                  <ActionEdit></ActionEdit>
+                  <ActionEdit onClick={() => navigate(`/manage/update-post?id=${post.id}`)}></ActionEdit>
                   <ActionDelete onClick={() => handleDeletePost(post.id)}></ActionDelete>
               </div>
             </td>
@@ -159,7 +195,10 @@ const PostManage = () => {
         </tbody>
       </Table>
       <div className="mt-10 text-center">
-        <Button className="mx-auto w-[200px]">Load more</Button>
+      {total > postList.length && (
+
+        <Button className="mx-auto w-[200px]" onClick={handleLoadMorePost}>Load more</Button>
+      )}
       </div>
     </div>
   );
