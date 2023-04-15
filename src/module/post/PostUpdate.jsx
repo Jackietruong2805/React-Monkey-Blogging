@@ -1,26 +1,30 @@
-import React, { useState } from "react";
-import DashboardHeading from "../dashboard/DashboardHeading";
-import { useForm } from "react-hook-form";
-import { Label } from "../../components/label";
-import { Field, FieldCheckboxes } from "../../components/field";
-import { Input } from "../../components/input";
-import ImageUpload from "../../components/image/ImageUpload";
-import { Radio } from "../../components/checkbox";
-import { Dropdown } from "../../components/dropdown";
-import Toggle from "../../components/toggle/Toggle";
-import { Button } from "../../components/button";
-import { useSearchParams } from "react-router-dom";
-import { useEffect } from "react";
-import { postStatus } from "../../utils/constants";
-import { collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
-import { db } from "../../firebase/firebase-config";
 import useFirebaseImage from "../../hooks/useFirebaseImage";
+import Toggle from "../../components/toggle/Toggle";
+import ReactQuill from 'react-quill';
+import React, { useState } from "react";
+import ImageUpload from "../../components/image/ImageUpload";
+import DashboardHeading from "../dashboard/DashboardHeading";
+import { useSearchParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
+import { Radio } from "../../components/checkbox";
+import { postStatus } from "../../utils/constants";
+import { Label } from "../../components/label";
+import { Input } from "../../components/input";
+import { Field, FieldCheckboxes } from "../../components/field";
+import { Dropdown } from "../../components/dropdown";
+import { db } from "../../firebase/firebase-config";
+import { collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { Button } from "../../components/button";
+import 'react-quill/dist/quill.snow.css';
 
 
 const PostUpdate = () => {
   const [params] = useSearchParams();
   const postId = params.get('id');
   const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState("");
   const {handleSubmit, control, setValue, watch, reset, getValues} = useForm({
     model: "onChange",
   });
@@ -53,8 +57,8 @@ const PostUpdate = () => {
       if(docSnapshot.data()){
         reset(docSnapshot.data());
         setSelectCategory(docSnapshot.data()?.category || "");
+        setContent(docSnapshot.data()?.content || "");
       }
-      console.log("docRef", docSnapshot.data());
     }
     fetchData();
   }, [postId, reset]);
@@ -86,9 +90,21 @@ const PostUpdate = () => {
     });
     setSelectCategory(item);
   }
-  const updatePostHandler = (values) =>{
-
+  const updatePostHandler = async (values) =>{
+    const docRef = doc(db, "posts", postId);
+    await updateDoc(docRef, {
+      content,
+    });
+    toast.success("Update post successfully!");
   }
+
+  const modules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['block']
+    ]
+  };
+
   if(!postId) return null;
   return <>
     <DashboardHeading title="Update post" desc="Update post content"></DashboardHeading>
@@ -168,7 +184,12 @@ const PostUpdate = () => {
           </Field>
         </div>
         <div className="mb-10">
-          Content is here
+          <Field>
+            <Label>Content</Label>
+            <div className="w-full entry-content">
+              <ReactQuill theme="snow" value={content} onChange={setContent} />
+            </div>
+          </Field>
         </div>
         <div className="form-layout">
           <Field>
@@ -177,7 +198,7 @@ const PostUpdate = () => {
           </Field>
         </div>
         <Button type="submit" className="mx-auto max-w-xs w-[300px]" isLoading={loading} disabled={loading}>
-          Add new post
+          Update post
         </Button>
       </form>
   </>;

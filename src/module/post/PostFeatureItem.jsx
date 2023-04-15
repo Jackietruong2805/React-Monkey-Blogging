@@ -5,6 +5,7 @@ import PostTitle from "./PostTitle";
 import PostMeta from "./PostMeta";
 import PostImage from "./PostImage";
 import PostCategory from "./PostCategory";
+import { useNavigate } from "react-router-dom";
 
 const PostFeatureItemStyles = styled.div`
   width: 100%;
@@ -59,9 +60,10 @@ const PostFeatureItemStyles = styled.div`
 `;
 const PostFeatureItem = ({data}) => {
   if(!data || !data.id) return null;
+  const navigate = useNavigate();
   const date = data?.createdAt?.seconds ? new Date(data?.createdAt?.seconds*1000) : new Date();
   const formatDate = new Date(date).toLocaleDateString('vi-VI');
-  const {category, user} = data;
+  const {category, user, slug} = data;
   return (
     <PostFeatureItemStyles>
     <PostImage 
@@ -69,7 +71,7 @@ const PostFeatureItem = ({data}) => {
         alt='unsplash'
     ></PostImage>
       <div className="post-overlay"></div>
-      <div className="post-content">
+      <div className="post-content" onClick={() => navigate(`/${slug}`)}>
         <div className="post-top">
           {category?.name && <PostCategory to={category?.slug}>{category?.name}</PostCategory>}
           <PostMeta to={slugify(user?.fullname || "", {lower: true})} authorName={user?.fullname} date={formatDate}></PostMeta>
