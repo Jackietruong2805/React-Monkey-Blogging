@@ -1,7 +1,8 @@
 import useFirebaseImage from "../../hooks/useFirebaseImage";
 import Toggle from "../../components/toggle/Toggle";
-import ReactQuill from 'react-quill';
-import React, { useState } from "react";
+import 'react-quill/dist/quill.snow.css';
+import ReactQuill, {Quill} from 'react-quill';
+import React, { useMemo, useState } from "react";
 import ImageUpload from "../../components/image/ImageUpload";
 import DashboardHeading from "../dashboard/DashboardHeading";
 import { useSearchParams } from "react-router-dom";
@@ -17,7 +18,8 @@ import { Dropdown } from "../../components/dropdown";
 import { db } from "../../firebase/firebase-config";
 import { collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { Button } from "../../components/button";
-import 'react-quill/dist/quill.snow.css';
+import ImageUploader from 'quill-image-uploader';
+Quill.register('modules/imageUploader', ImageUploader);
 
 
 const PostUpdate = () => {
@@ -98,12 +100,23 @@ const PostUpdate = () => {
     toast.success("Update post successfully!");
   }
 
-  const modules = {
+  const modules = useMemo( () => ({
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'],
-      ['block']
-    ]
-  };
+      ['blockquote'],
+      [{ header: 1 }, { header: 2 }], // custom button values
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ['link', 'image']
+    ],
+    imageUploader: {
+      upload: (file) => {
+        return new Promise((resolve, reject) => {
+          resolve('https://api.imgbb.com/1/upload');
+        });
+      }
+    },
+  }), []);
 
   if(!postId) return null;
   return <>
@@ -187,7 +200,7 @@ const PostUpdate = () => {
           <Field>
             <Label>Content</Label>
             <div className="w-full entry-content">
-              <ReactQuill theme="snow" value={content} onChange={setContent} />
+              <ReactQuill modules={modules} theme="snow" value={content} onChange={setContent} />
             </div>
           </Field>
         </div>
