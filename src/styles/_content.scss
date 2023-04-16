@@ -24,6 +24,25 @@
     figure {
       margin-bottom: 20px;
     }
+    ul{
+      list-style-type: disc;
+    }
+    ol{
+      list-style: decimal;
+    }
+    ul,
+    ol{
+      margin-bottom: 20px;
+      padding-left: 40px;
+      margin-left: 0;
+      li{
+        margin-bottom: 10px;
+      }
+    }
+    img{
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
     @media screen and (max-width: 1023.98px) {
       font-size: 14px;
       h2 {

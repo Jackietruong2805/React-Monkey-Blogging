@@ -1,11 +1,11 @@
 import useFirebaseImage from "../../hooks/useFirebaseImage";
 import Toggle from "../../components/toggle/Toggle";
-import 'react-quill/dist/quill.snow.css';
 import ReactQuill, {Quill} from 'react-quill';
 import React, { useMemo, useState } from "react";
+import ImageUploader from 'quill-image-uploader';
 import ImageUpload from "../../components/image/ImageUpload";
 import DashboardHeading from "../dashboard/DashboardHeading";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -18,16 +18,18 @@ import { Dropdown } from "../../components/dropdown";
 import { db } from "../../firebase/firebase-config";
 import { collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { Button } from "../../components/button";
-import ImageUploader from 'quill-image-uploader';
+import 'react-quill/dist/quill.snow.css';
+import { imgbbAPI } from "../../utils/apiConfig";
+import axios from "axios";
 Quill.register('modules/imageUploader', ImageUploader);
 
 
 const PostUpdate = () => {
+  const navigate = useNavigate();
   const [params] = useSearchParams();
   const postId = params.get('id');
-  const [loading, setLoading] = useState(false);
   const [content, setContent] = useState("");
-  const {handleSubmit, control, setValue, watch, reset, getValues} = useForm({
+  const {handleSubmit, control, setValue, watch, reset, getValues, formState: {isValid, isSubmitting}} = useForm({
     model: "onChange",
   });
   const imageUrl = getValues("image");
@@ -93,11 +95,14 @@ const PostUpdate = () => {
     setSelectCategory(item);
   }
   const updatePostHandler = async (values) =>{
+    if(!isValid) return;
     const docRef = doc(db, "posts", postId);
     await updateDoc(docRef, {
+      ...values,
       content,
     });
     toast.success("Update post successfully!");
+    navigate("/manage/posts");
   }
 
   const modules = useMemo( () => ({
@@ -110,10 +115,18 @@ const PostUpdate = () => {
       ['link', 'image']
     ],
     imageUploader: {
-      upload: (file) => {
-        return new Promise((resolve, reject) => {
-          resolve('https://api.imgbb.com/1/upload');
+      upload: async (file) => {
+        const bodyFormData = new FormData();
+        bodyFormData.append("image", file);
+        const response = await axios({
+          method: "post",
+          url: imgbbAPI,
+          data: bodyFormData,
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
         });
+        return response.data.data.url;
       }
     },
   }), []);
@@ -210,7 +223,7 @@ const PostUpdate = () => {
             <Toggle on={watchHot ===  true} onClick={() => setValue("hot", !watchHot)}></Toggle>
           </Field>
         </div>
-        <Button type="submit" className="mx-auto max-w-xs w-[300px]" isLoading={loading} disabled={loading}>
+        <Button type="submit" className="mx-auto max-w-xs w-[300px]" isLoading={isSubmitting} disabled={isSubmitting}>
           Update post
         </Button>
       </form>

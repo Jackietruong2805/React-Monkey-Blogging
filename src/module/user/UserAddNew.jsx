@@ -14,6 +14,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { Button } from "../../components/button";
 import { auth, db } from "../../firebase/firebase-config";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { Textarea } from "../../components/textarea";
 
 const UserAddNew = () => {
   const {
@@ -196,6 +197,15 @@ const UserAddNew = () => {
                 User
               </Radio>
             </FieldCheckboxes>
+          </Field>
+        </div>
+        <div className='form-layout'>
+          <Field>
+              <Label>Description</Label>
+              <Textarea
+                name='description'
+                control={control}
+              ></Textarea>
           </Field>
         </div>
         <Button

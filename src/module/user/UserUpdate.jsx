@@ -14,6 +14,7 @@ import { Field, FieldCheckboxes } from '../../components/field';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase-config';
 import { Button } from '../../components/button';
+import { Textarea } from '../../components/textarea';
 
 const UserUpdate = () => {
     const {control, handleSubmit, watch, getValues, setValue, reset, formState: {isValid, isSubmitting}} = useForm({
@@ -186,6 +187,15 @@ const UserUpdate = () => {
                 User
               </Radio>
             </FieldCheckboxes>
+          </Field>
+        </div>
+        <div className='form-layout'>
+          <Field>
+              <Label>Description</Label>
+              <Textarea
+                name='description'
+                control={control}
+              ></Textarea>
           </Field>
         </div>
         <Button
