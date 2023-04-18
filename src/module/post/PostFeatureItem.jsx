@@ -74,7 +74,7 @@ const PostFeatureItem = ({data}) => {
       <div className="post-content" onClick={() => navigate(`/${slug}`)}>
         <div className="post-top">
           {category?.name && <PostCategory to={category?.slug}>{category?.name}</PostCategory>}
-          <PostMeta to={slugify(user?.fullname || "", {lower: true})} authorName={user?.fullname} date={formatDate}></PostMeta>
+          <PostMeta to={slugify(user?.username || "", {lower: true})} authorName={user?.fullname} date={formatDate}></PostMeta>
         </div>
         <PostTitle>{data?.title}</PostTitle>
       </div>

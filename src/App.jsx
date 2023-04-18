@@ -15,11 +15,23 @@ import DashboardLayout from "./module/dashboard/DashboardLayout"
 import CategoryUpdate from "./module/category/CategoryUpdate"
 import CategoryManage from "./module/category/CategoryManage"
 import CategoryAddNew from "./module/category/CategoryAddNew"
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, useParams } from "react-router-dom"
 import { AuthProvider } from "./contexts/auth-context"
+import { useState } from "react"
+import CategoryPage from "./pages/CategoryPage"
+
+// let {slug} = useParams();
+// console.log("slug", slug);
 
 function App() {
-
+  const params = useParams();
+  console.log("params", params);
+  const [slugs, setSlugs] = useState("");
+  function HandlePostDetailsPage(){
+    let {slug} = useParams();
+    setSlugs(slug);
+    return <PostDetailsPage></PostDetailsPage>
+  }
   return (
     <div>
       <AuthProvider>
@@ -29,8 +41,14 @@ function App() {
             <Route path="/sign-in" element={<SignInPage></SignInPage>}></Route>
             <Route path="*" element={<PageNotFound></PageNotFound>}></Route>
             <Route
+              path="/category/:slug"
+              element={<CategoryPage></CategoryPage>}
+              key={slugs} 
+          ></Route>
+          <Route
               path="/:slug"
-              element={<PostDetailsPage></PostDetailsPage>}
+              element={<HandlePostDetailsPage></HandlePostDetailsPage>}
+              key={slugs} 
           ></Route>
             <Route element={<DashboardLayout></DashboardLayout>}>
               <Route

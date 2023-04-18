@@ -87,7 +87,6 @@ const PostAddNew = () => {
         }finally{
           setLoading(false);
         }
-        
       }
       
       useEffect(()=>{
@@ -120,7 +119,6 @@ const handleClickOption = async (item) =>{
       ...docData.data()
     });
     setSelectCategory(item);
-
 }
 
   return (

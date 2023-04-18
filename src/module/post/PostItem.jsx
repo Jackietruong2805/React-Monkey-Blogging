@@ -4,6 +4,7 @@ import PostCategory from "./PostCategory";
 import PostImage from "./PostImage";
 import PostMeta from "./PostMeta";
 import PostTitle from "./PostTitle";
+import slugify from "slugify";
 const PostItemStyles = styled.div`
   display: flex;
   flex-direction: column;
@@ -32,18 +33,28 @@ const PostItemStyles = styled.div`
   }
 `;
 
-const PostItem = () => {
+const PostItem = ({data}) => {
+  if(!data) return null;
+  
+  const date = data?.createdAt?.seconds ? new Date(data?.createdAt?.seconds*1000) : new Date();
+  const formatDate = new Date(date).toLocaleDateString('vi-VI');
   return (
     <PostItemStyles>
     <PostImage 
-        url="https://images.unsplash.com/photo-1570993492881-25240ce854f4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2290&q=80"
+        url={data.image}
         alt=""
-        to='/'
+        to={data?.slug}
         >
     </PostImage>
-    <PostCategory size='big'>Kiến thức</PostCategory>
-    <PostTitle>The complete guide to learn new languages for beginners</PostTitle>
-    <PostMeta></PostMeta>
+    <PostCategory to={data.category?.slug}>
+      {data.category?.name}
+    </PostCategory>
+    <PostTitle to={data?.slug}>{data.title}</PostTitle>
+    <PostMeta
+      to={slugify(data.user?.username || "", {lower: true})} 
+      authorName={data.user?.fullname} 
+      date={formatDate}
+    ></PostMeta>
     </PostItemStyles>
   );
 };
