@@ -116,6 +116,7 @@ const PostDetailsPage = () => {
       })
     }
     fetchData();
+    console.log("postInfo", postInfo);
   }, []);
 
   useEffect(() => {

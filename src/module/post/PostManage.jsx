@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Table } from "../../components/table";
-import { postStatus } from "../../utils/constants";
+import { postStatus, userRole } from "../../utils/constants";
 import { LabelStatus } from "../../components/label";
 import { Dropdown } from "../../components/dropdown";
 import { debounce } from "debounce";
@@ -13,9 +13,10 @@ import { db } from "../../firebase/firebase-config";
 import { collection, doc, getDocs, limit, onSnapshot, query, startAfter, where } from "firebase/firestore";
 import { Button } from "../../components/button";
 import { ActionDelete, ActionEdit, ActionView } from "../../components/action";
+import { useAuth } from "../../contexts/auth-context";
 
 
-const POST_PER_PAGE = 1;
+const POST_PER_PAGE = 3;
 
 const PostManage = () => {
   const [postList, setPostList] = useState([]);
@@ -120,6 +121,8 @@ const PostManage = () => {
     setLastDoc(lastVisible);
   };
 
+  const {userInfo} = useAuth();
+  // if(userInfo.role !== userRole.ADMIN) return null;
   return (
     <div>
       <DashboardHeading

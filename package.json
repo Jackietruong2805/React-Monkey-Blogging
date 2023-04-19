@@ -29,6 +29,7 @@
     "slugify": "^1.6.5",
     "styled-components": "^5.3.6",
     "sweetalert2": "^11.7.3",
+    "uuid": "^9.0.0",
     "yup": "^1.0.2"
   },
   "devDependencies": {
